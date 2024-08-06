@@ -1,0 +1,102 @@
+syntax = "v1"
+
+import "base.api"
+
+info(
+	title: "file service api"
+	desc: "there are some file api related to conversation."
+	author: "dunzane"
+	email: "dengzhaowork@gmail.com"
+	version: "v0.0.1"
+)
+
+type (
+	// 上传文件
+	UploadFileRequst {
+		File FileObject `json:"file"`
+	}
+	UploadFileResponse {
+		Base
+		PresignedURL string `json:"presigned_url"`
+		ExpiresAt    string `json:"expires_at"`
+		FileId       string `json:"file_id"`
+	}
+
+	// 更新文件
+	UpdateFileRequest {
+		Status          string `json:"status"`
+		StorageProvider string `json:"store_provider"`
+		FileId          string `json:"file_id"`
+	}
+
+	// 文件列表
+	ListFilesRequest {
+		Limit  int `json:"limit"`
+		Offset int `json:"offset"`
+	}
+	ListFilesResponse {
+		Base
+		Files []*FileObject `json:"files"`
+		Total int           `json:"total""`
+	}
+
+	// 删除文件
+	DeleteFileRequest {
+		FileId string `json:"file_id"`
+	}
+
+	// 预览文件
+	PreviewFileRequest {
+		FileId string `json:"file_id"`
+	}
+	PreviewFileResponse {
+		Base
+		PresignedURL string `json:"presigned_url"`
+		ExpiresAt    string `json:"expires_at"`
+	}
+
+	// 文件信息
+	GetFileInfoRequest {
+		FileId string `json:"file_id"`
+	}
+	GetFileInfoResponse {
+		Base
+		File FileObject `json:"file"`
+	}
+)
+
+@server (
+	prefix:/v1/file
+	group: FileOps
+	jwt: Auth // 开启 jwt 认证
+	middleware: JwtMiddleware
+	timeout: 20s
+)
+service file-api {
+	@handler UploadFileHandler
+	post /upload (UploadFileRequst) returns (UploadFileResponse)
+	
+	@handler UpdateFileHandler
+	post /update (UpdateFileRequest) returns (Base)
+	
+	@handler ListFilesHandler
+	post /list (ListFilesRequest) returns (ListFilesResponse)
+	
+	@handler DeleteFileHandler
+	post /delete (DeleteFileRequest) returns (Base)
+}
+
+@server (
+	prefix:/v1/file
+	group: FileInfo
+	jwt: Auth // 开启 jwt 认证
+	middleware: JwtMiddleware
+	timeout: 20s
+)
+service file-api {
+	@handler PreviewFileHandler
+	post /preview (PreviewFileRequest) returns (PreviewFileResponse)
+	
+	@handler FileInfoHandler
+	get /fileinfo (GetFileInfoRequest) returns (GetFileInfoResponse)
+}

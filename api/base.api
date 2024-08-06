@@ -1,0 +1,22 @@
+syntax = "v1"
+
+info(
+    title: "file base api"
+    desc: "there are some base api related to file."
+    author: "dunzane"
+    email: "dengzhaowork@gmail.com"
+    version: "v0.0.1"
+)
+type (
+    Base {
+        Code int `json:"code"`
+        Msg string `json:"msg"`
+    }
+
+    FileObject {
+        FileName string `json:"file_name" validate:"required"`
+        FileMD5 string `json:"file_md5" validate:"required"`
+        FileType string `json:"file_type" validate:"required"`
+        FileSize int64 `json:"file_size" validate:"required"`
+    }
+)

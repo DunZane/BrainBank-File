@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package fileOps;
+
+option go_package = "../pb";
+
+message FileObject {
+  string file_name = 1;
+  string file_md5 = 2;
+  string file_type = 3;
+  int64 file_size = 4;
+}
+
+message UploadFileRequest {
+  int64 user_id = 1;
+  FileObject file = 2;
+}
+
+message UploadFileResponse {
+  int32 code = 1;
+  string presigned_url = 2;
+  string expires_at = 3;
+  string file_id = 4;
+}
+
+message UpdateFileRequest {
+  int64 user_id = 1;
+  string file_id = 2;
+  string status = 3;
+  string store_provider = 4;
+}
+
+message UpdateFileResponse {
+  int32 code = 1;
+}
+
+message ListFilesRequest {
+  int64 user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message ListFilesResponse {
+  int32 code = 1;
+  repeated FileObject files = 2;
+  int32  total = 3;
+}
+
+message DeleteFileRequest {
+  string file_id = 1;
+  int64 user_id = 2;
+}
+
+message DeleteFileResponse {
+  int32 code = 1;
+}
+
+service FileOps {
+  rpc UploadFile (UploadFileRequest) returns (UploadFileResponse) {}
+  rpc UpdateFile (UpdateFileRequest) returns (UpdateFileResponse) {}
+  rpc ListFiles (ListFilesRequest) returns (ListFilesResponse) {}
+  rpc DeleteFile (DeleteFileRequest) returns (DeleteFileResponse) {}
+}
